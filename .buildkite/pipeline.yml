@@ -1,4 +1,4 @@
 steps:
   - label: ":bazel: Build"
     commands:
-      - bazel build //:rust_hello_world
+      - echo $BUILDKITE_BUILD_CHECKOUT_PATH
