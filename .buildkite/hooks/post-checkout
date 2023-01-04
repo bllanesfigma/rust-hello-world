@@ -1,4 +1,23 @@
 #!/usr/bin/env bash
-whoami
-pwd
-docker ps
+
+# Check if base container exists
+docker inspect base &> /dev/null
+
+if [[ $? -ne 0 ]]; then
+  echo "Bazel server container does not exist, creating."
+  docker run \
+    --name base \
+    --rm \
+    -d \
+    -v "/var/lib/buildkite-agent/builds:/var/lib/buildkite-agent/builds" \
+    -v "/usr/local/bin/buildkite-agent:/usr/local/bin/buildkite-agent" \
+    --entrypoint tail \
+    bllanesfigma/buildpack-deps-bazel:buster \
+    -f /dev/null
+fi
+
+echo "Starting Bazel server for $BUILDKITE_BUILD_CHECKOUT_PATH."
+docker exec \
+  -w $BUILDKITE_BUILD_CHECKOUT_PATH \
+  base \
+  bazel info output_base
