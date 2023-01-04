@@ -4,4 +4,11 @@ services:
     image: buildpack-deps:buster@sha256:cbf9915fc2c12f95de45033fd6c1131cdbfbc35ce12bf6a6b1dc76a55d9f011a
     volumes:
       - "${BUILDKITE_BUILD_CHECKOUT_PATH:-.}:${BUILDKITE_BUILD_CHECKOUT_PATH:-/project}"
+      - "bazel-cache:/root/.cache/bazel"
     working_dir: ${BUILDKITE_BUILD_CHECKOUT_PATH:-/project}
+    network_mode: container:base
+    pid: container:base
+volumes:
+  bazel-cache:
+    external:
+      name: bazel-cache

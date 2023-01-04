@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Create Bazel cache volume
+docker volume create bazel-cache
+
 # Check if base container exists
 docker inspect base &> /dev/null
 
@@ -11,8 +14,10 @@ if [[ $? -ne 0 ]]; then
     -d \
     -v "/var/lib/buildkite-agent/builds:/var/lib/buildkite-agent/builds" \
     -v "/usr/local/bin/buildkite-agent:/usr/local/bin/buildkite-agent" \
+    -v "bazel-cache:/root/.cache/bazel" \
+    --init \
     --entrypoint tail \
-    bllanesfigma/buildpack-deps-bazel:buster \
+    buildpack-deps:buster@sha256:cbf9915fc2c12f95de45033fd6c1131cdbfbc35ce12bf6a6b1dc76a55d9f011a \
     -f /dev/null
 fi
 
@@ -20,4 +25,4 @@ echo "Starting Bazel server for $BUILDKITE_BUILD_CHECKOUT_PATH."
 docker exec \
   -w $BUILDKITE_BUILD_CHECKOUT_PATH \
   base \
-  bazel info output_base
+  ./start-bazel.sh
