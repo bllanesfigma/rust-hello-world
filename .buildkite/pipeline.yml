@@ -1,6 +1,0 @@
-steps:
-  - command: ./ci.sh
-    plugins:
-      - docker-compose#v4.9.0:
-          run: ci
-          cli-version: 2
